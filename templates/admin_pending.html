@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Pending HR Verifications</title>
+    <style>
+        table { width: 90%; margin: 20px auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background-color: #f4f4f4; }
+        button { padding: 5px 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        a { text-decoration: none; color: #007BFF; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center;">Pending HR Accounts</h2>
+    {% if pending %}
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Verification Doc</th>
+            <th>Action</th>
+        </tr>
+        {% for hr in pending %}
+        <tr>
+            <td>{{ hr.name }}</td>
+            <td>{{ hr.email }}</td>
+            <td>{{ hr.company_name }}</td>
+            <td>{{ hr.job_title }}</td>
+            <td>
+                <a href="{{ url_for('uploaded_file', filename=hr.verification_doc.split('/')[-1]) }}" target="_blank">View Doc</a>
+            </td>
+            <td>
+                <form action="{{ url_for('approve_hr', hr_id=hr._id) }}" method="POST">
+                    <button type="submit">Approve</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p style="text-align:center;">No pending HR accounts.</p>
+    {% endif %}
+</body>
+</html>

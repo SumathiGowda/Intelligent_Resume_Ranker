@@ -1,0 +1,18 @@
+# Python cache & virtual env
+__pycache__/
+*.pyc
+.env/
+venv/
+.venv/
+
+# Flask upload folders
+static/uploads/
+instance/
+
+# IDE/project files
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Dashboard</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100%;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        /* Geometric background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(72, 187, 120, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #475569;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+            padding: 0 2rem;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            padding: 1rem 0;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+        }
+
+        .nav-item.active {
+            color: #4f46e5;
+        }
+
+        /* Main content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2rem;
+        }
+
+        /* Metrics cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .metric-icon.blue { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color: #3b82f6; }
+        .metric-icon.green { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #22c55e; }
+        .metric-icon.purple { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); color: #a855f7; }
+        .metric-icon.orange { background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%); color: #f97316; }
+        .metric-icon.pink { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #ec4899; }
+        .metric-icon.teal { background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%); color: #14b8a6; }
+
+        .trend-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .trend-up { color: #22c55e; }
+        .trend-down { color: #ef4444; }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            color: #64748b;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            max-width: 800px;
+        }
+
+        .action-button {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            margin: 0 auto 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-subtitle {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        /* Content sections */
+        .content-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+        }
+
+        .content-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .content-card {
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(226, 232, 240, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-badge {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .card-content {
+            color: #64748b;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        /* Analytics section */
+        .analytics-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            margin-bottom: 2rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .chart-container {
+            background: rgba(248, 250, 252, 0.6);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(226, 232, 240, 0.4);
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Notifications */
+        .notifications {
+            position: fixed;
+            top: 120px;
+            right: 2rem;
+            z-index: 50;
+            width: 320px;
+        }
+
+        .notification {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            margin-bottom: 0.75rem;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.875rem;
+        }
+
+        .notification-time {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        .notification-content {
+            color: #64748b;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        /* Delete positions button */
+        .delete-positions-btn {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .delete-positions-btn:hover {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .content-sections {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .notifications {
+                position: relative;
+                top: auto;
+                right: auto;
+                width: 100%;
+                margin-bottom: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content, .nav-content, .main-content {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">RR</div>
+        <span class="logo-text" id="company-name">{{ company_name }}</span>
+      </div>
+      <div class="user-profile">
+  <span class="user-name" id="user-name">{{ hr.name }}</span>
+
+  <img src="{{ url_for('static', filename=hr['profile_pic']) if hr.get('profile_pic') else url_for('static', filename='images/default-avatar.svg') }}"
+       alt="Profile Picture"
+       class="w-10 h-10 rounded-full object-cover border-2 border-indigo-200 shadow-sm" />
+</div>
+
+
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="nav-bar">
+  <div class="nav-content">
+    <a href="{{ url_for('dashboard') }}" class="nav-item">Dashboard</a>
+    <a href="#" class="nav-item">Employees</a>
+    <a href="#" class="nav-item">Recruitment</a>
+    <a href="#" class="nav-item">Performance</a>
+    <a href="#" class="nav-item">Analytics</a>
+    <a href="{{ url_for('settings') }}" class="nav-item">Settings</a>
+  </div>
+</nav>
+
+
+  <!-- Floating Notifications -->
+  <div class="notifications">
+    {% for notification in notifications %}
+    <div class="notification">
+      <div class="notification-header">
+        <span class="notification-title">{{ notification.title }}</span>
+        <span class="notification-time">{{ notification.time }}</span>
+      </div>
+      <div class="notification-content">
+        {{ notification.content }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <h1 class="dashboard-title" id="dashboard-title">{{ dashboard_title }}</h1>
+
+    <!-- Metrics Cards -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-header">
+          <div class="metric-icon green">📊</div>
+          <div class="trend-indicator trend-up">↗ +{{ metrics.open_positions.trend }}%</div>
+        </div>
+        <div class="metric-value">{{ metrics.open_positions.value }}</div>
+        <div class="metric-label">Open Positions</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-header">
+          <div class="metric-icon purple">📝</div>
+          <div class="trend-indicator trend-up">↗ +{{ metrics.applications_week.trend }}%</div>
+        </div>
+        <div class="metric-value">{{ metrics.applications_week.value }}</div>
+        <div class="metric-label">Applications This Week</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-header">
+          <div class="metric-icon orange">🗑️</div>
+          <div class="trend-indicator">
+            <button class="delete-positions-btn">Delete Positions</button>
+          </div>
+        </div>
+        <div class="metric-value">{{ metrics.manage_positions.value }}</div>
+        <div class="metric-label">Manage Open Positions</div>
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+      <h2 class="section-title">Quick Actions</h2>
+      <div class="actions-grid">
+        <button class="action-button">
+          <div class="action-icon green">📋</div>
+          <div class="action-title">Post Job</div>
+          <div class="action-subtitle">Create new job listing</div>
+        </button>
+        <button class="action-button">
+          <div class="action-icon purple">📈</div>
+          <div class="action-title">Generate Report</div>
+          <div class="action-subtitle">Create analytics report</div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Content Sections -->
+    <div class="content-sections">
+      <!-- Recent Job Descriptions -->
+      <section class="content-section">
+        <h2 class="section-title">Recent Job Descriptions</h2>
+        <div class="content-cards">
+          {% for job in jobs %}
+          <div class="content-card">
+            <div class="card-header">
+              <span class="card-title">{{ job.title }}</span>
+              <span class="card-badge">{{ job.status }}</span>
+            </div>
+            <div class="card-content">{{ job.summary }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Top AI-Ranked Candidates -->
+      <section class="content-section">
+        <h2 class="section-title">Top AI-Ranked Candidates</h2>
+        <div class="content-cards">
+          {% for candidate in candidates %}
+          <div class="content-card">
+            <div class="card-header">
+              <span class="card-title">{{ candidate.name }}</span>
+              <span class="card-badge">{{ candidate.match }}% Match</span>
+            </div>
+            <div class="card-content">{{ candidate.summary }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
+       
+
+    <!-- Analytics Section -->
+    <section class="analytics-section">
+      <h2 class="section-title">Analytics Overview</h2>
+      <div class="charts-grid">
+        <div class="chart-container">📊 Bar Chart Placeholder<br><small>{{ analytics.hiring_trends }}</small></div>
+        <div class="chart-container">🥧 Pie Chart Placeholder<br><small>{{ analytics.department_distribution }}</small></div>
+      </div>
+    </section>
+  </main>
+</body>
+
+
+  <script>
+        // Default configuration
+        const defaultConfig = {
+            company_name: "ResumeRank AI",
+            user_name: "[User Name]",
+            dashboard_title: "HR Dashboard Overview"
+        };
+
+        // Configuration object
+        let config = { ...defaultConfig };
+
+        // Element SDK implementation
+        const element = {
+            defaultConfig,
+            
+            onConfigChange: async (newConfig) => {
+                // Update company name
+                const companyNameEl = document.getElementById('company-name');
+                if (companyNameEl) {
+                    companyNameEl.textContent = newConfig.company_name || defaultConfig.company_name;
+                }
+
+                // Update user name
+                const userNameEl = document.getElementById('user-name');
+                if (userNameEl) {
+                    userNameEl.textContent = newConfig.user_name || defaultConfig.user_name;
+                }
+
+                // Update dashboard title
+                const dashboardTitleEl = document.getElementById('dashboard-title');
+                if (dashboardTitleEl) {
+                    dashboardTitleEl.textContent = newConfig.dashboard_title || defaultConfig.dashboard_title;
+                }
+            },
+
+            mapToCapabilities: (config) => ({
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            }),
+
+            mapToEditPanelValues: (config) => new Map([
+                ["company_name", config.company_name || defaultConfig.company_name],
+                ["user_name", config.user_name || defaultConfig.user_name],
+                ["dashboard_title", config.dashboard_title || defaultConfig.dashboard_title]
+            ])
+        };
+
+        // Initialize Element SDK
+        if (window.elementSdk) {
+            window.elementSdk.init(element);
+        }
+
+        // Add interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to metric cards
+            const metricCards = document.querySelectorAll('.metric-card');
+            metricCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add click handlers to action buttons
+            const actionButtons = document.querySelectorAll('.action-button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const title = this.querySelector('.action-title').textContent;
+                    // Create a temporary success message
+                    const notification = document.createElement('div');
+                    notification.className = 'notification';
+                    notification.innerHTML = `
+                        <div class="notification-header">
+                            <span class="notification-title">Action Triggered</span>
+                            <span class="notification-time">now</span>
+                        </div>
+                        <div class="notification-content">
+                            ${title} action would be executed here
+                        </div>
+                    `;
+                    
+                    const notificationsContainer = document.querySelector('.notifications');
+                    notificationsContainer.insertBefore(notification, notificationsContainer.firstChild);
+                    
+                    // Remove notification after 3 seconds
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3000);
+                });
+            });
+
+            // Add click handler for delete positions button
+            const deleteBtn = document.querySelector('.delete-positions-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function() {
+                    // Create confirmation notification
+                    const notification = document.createElement('div');
+                    notification.className = 'notification';
+                    notification.innerHTML = `
+                        <div class="notification-header">
+                            <span class="notification-title">Delete Positions</span>
+                            <span class="notification-time">now</span>
+                        </div>
+                        <div class="notification-content">
+                            Position deletion interface would open here. HR can select and remove open positions.
+                        </div>
+                    `;
+                    
+                    const notificationsContainer = document.querySelector('.notifications');
+                    notificationsContainer.insertBefore(notification, notificationsContainer.firstChild);
+                    
+                    // Remove notification after 4 seconds
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 4000);
+                });
+            }
+
+           // Add navigation item click handlers
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+        // Only prevent default if the link doesn't go anywhere (href="#")
+        if (this.getAttribute('href') === '#') {
+            e.preventDefault();
+        }
+
+        // Remove active class from all items
+        navItems.forEach(nav => nav.classList.remove('active'));
+
+        // Add active class to clicked item
+        this.classList.add('active');
+    });
+});
+
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99717d63415ec19c',t:'MTc2MTg5NjI3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

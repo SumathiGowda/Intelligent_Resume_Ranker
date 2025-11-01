@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard - ResumeRank AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 30%, #ddd6fe 70%, #c7d2fe 100%);
+            min-height: 100%;
+            color: #1e293b;
+        }
+        
+        /* Background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="12.5" cy="12.5" r="0.8" fill="rgba(79,70,229,0.06)"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: -1;
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4F46E5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo::before {
+            content: '🎯';
+            font-size: 28px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        
+        .nav-tabs a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-tabs a:hover,
+        .nav-tabs a.active {
+            color: #4F46E5;
+            background: rgba(79, 70, 229, 0.1);
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        .dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+            border: 1px solid #e2e8f0;
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown a {
+            display: block;
+            padding: 12px 16px;
+            color: #64748b;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 4px;
+        }
+        
+        .dropdown a:hover {
+            background: #f8fafc;
+            color: #4F46E5;
+        }
+        
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #1e293b 0%, #4F46E5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .page-subtitle {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+        
+        /* Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px -5px rgba(79, 70, 229, 0.2);
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .metric-1 .metric-icon {
+            background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+        }
+        
+        .metric-2 .metric-icon {
+            background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+        }
+        
+        .metric-3 .metric-icon {
+            background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+        }
+        
+        .metric-4 .metric-icon {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
+        .metric-5 .metric-icon {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        }
+        
+        .metric-6 .metric-icon {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        }
+        
+        .metric-trend {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .trend-up {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+        
+        .trend-down {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .actions-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+        
+        .action-btn.secondary {
+            background: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+        }
+        
+        .action-btn.secondary:hover {
+            background: rgba(79, 70, 229, 0.2);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+        }
+        
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+        
+        .content-section {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .view-all-btn {
+            color: #4F46E5;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+        
+        .view-all-btn:hover {
+            color: #3730a3;
+        }
+        
+        /* Job Descriptions */
+        .job-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        
+        .job-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+        
+        .job-info h4 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .job-meta {
+            font-size: 12px;
+            color: #64748b;
+            display: flex;
+            gap: 16px;
+        }
+        
+        .job-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .job-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .job-btn.primary {
+            background: #4F46E5;
+            color: white;
+        }
+        
+        .job-btn.primary:hover {
+            background: #3730a3;
+        }
+        
+        .job-btn.secondary {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        
+        .job-btn.secondary:hover {
+            background: #cbd5e1;
+        }
+        
+        /* AI Rankings */
+        .candidate-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        
+        .candidate-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+        
+        .candidate-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .candidate-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .candidate-details h4 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        
+        .candidate-meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .candidate-score {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+        
+        .candidate-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .candidate-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-shortlist {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-hold {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+        
+        /* Analytics Section */
+        .analytics-section {
+            grid-column: 1 / -1;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+        
+        .chart-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .chart-placeholder {
+            text-align: center;
+            color: #64748b;
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        /* Simple Bar Chart */
+        .bar-chart {
+            display: flex;
+            align-items: end;
+            gap: 8px;
+            height: 200px;
+            padding: 20px 0;
+        }
+        
+        .bar {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            border-radius: 4px 4px 0 0;
+            min-width: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .bar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        
+        .bar-1 { height: 60%; }
+        .bar-2 { height: 80%; }
+        .bar-3 { height: 45%; }
+        .bar-4 { height: 90%; }
+        .bar-5 { height: 70%; }
+        .bar-6 { height: 85%; }
+        .bar-7 { height: 95%; }
+        
+        /* Simple Pie Chart */
+        .pie-chart {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(
+                #4F46E5 0deg 120deg,
+                #7C3AED 120deg 200deg,
+                #10b981 200deg 280deg,
+                #f59e0b 280deg 360deg
+            );
+            position: relative;
+        }
+        
+        .pie-chart::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Notifications */
+        .notifications {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            width: 320px;
+            z-index: 1000;
+        }
+        
+        .notification {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid #4F46E5;
+            transform: translateX(350px);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .notification-content {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .close-notification {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 16px;
+            }
+            
+            .nav-tabs {
+                display: none;
+            }
+            
+            .main-container {
+                padding: 24px 16px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .notifications {
+                right: 16px;
+                width: calc(100vw - 32px);
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">ResumeRank AI</div>
+            <nav class="nav-tabs">
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Job Descriptions</a>
+                <a href="#">Candidates</a>
+                <a href="#">Analytics</a>
+                <a href="#">Profile</a>
+            </nav>
+            <div class="user-menu">
+                <div class="user-avatar" onclick="toggleDropdown()">HR</div>
+                <div class="dropdown" id="userDropdown">
+                    <a href="#">👤 Profile</a>
+                    <a href="#">⚙️ Settings</a>
+                    <a href="#">📊 Reports</a>
+                    <a href="#" onclick="logout()">🚪 Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">HR Dashboard</h1>
+            <p class="page-subtitle">Welcome back! Here's what's happening with your recruitment process.</p>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="metrics-grid">
+            <div class="metric-card metric-1">
+                <div class="metric-header">
+                    <div class="metric-icon">📋</div>
+                    <div class="metric-trend trend-up">+12%</div>
+                </div>
+                <div class="metric-value">24</div>
+                <div class="metric-label">Active Job Postings</div>
+            </div>
+            
+            <div class="metric-card metric-2">
+                <div class="metric-header">
+                    <div class="metric-icon">📄</div>
+                    <div class="metric-trend trend-up">+28%</div>
+                </div>
+                <div class="metric-value">1,247</div>
+                <div class="metric-label">Applications Received</div>
+            </div>
+            
+            <div class="metric-card metric-3">
+                <div class="metric-header">
+                    <div class="metric-icon">✅</div>
+                    <div class="metric-trend trend-up">+15%</div>
+                </div>
+                <div class="metric-value">89</div>
+                <div class="metric-label">Shortlisted Candidates</div>
+            </div>
+            
+            <div class="metric-card metric-4">
+                <div class="metric-header">
+                    <div class="metric-icon">📅</div>
+                    <div class="metric-trend trend-up">+5%</div>
+                </div>
+                <div class="metric-value">12</div>
+                <div class="metric-label">Upcoming Interviews</div>
+            </div>
+            
+            <div class="metric-card metric-5">
+                <div class="metric-header">
+                    <div class="metric-icon">⭐</div>
+                    <div class="metric-trend trend-up">+3%</div>
+                </div>
+                <div class="metric-value">8.4</div>
+                <div class="metric-label">Average Candidate Score</div>
+            </div>
+            
+            <div class="metric-card metric-6">
+                <div class="metric-header">
+                    <div class="metric-icon">🎯</div>
+                    <div class="metric-trend trend-up">+18%</div>
+                </div>
+                <div class="metric-value">94%</div>
+                <div class="metric-label">AI Accuracy Rate</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3 class="actions-header">Quick Actions</h3>
+            <div class="actions-grid">
+                <button class="action-btn" onclick="createJobDescription()">
+                    ➕ Create New Job Description
+                </button>
+                <button class="action-btn secondary" onclick="viewRankings()">
+                    🧠 View AI Rankings
+                </button>
+                <button class="action-btn secondary" onclick="exportReports()">
+                    📊 Export Reports
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Job Descriptions Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3 class="section-title">Recent Job Descriptions</h3>
+                    <a href="#" class="view-all-btn">View All</a>
+                </div>
+                
+                <div class="job-item">
+                    <div class="job-info">
+                        <h4>Senior Software Engineer</h4>
+                        <div class="job-meta">
+                            <span>📄 45 Applications</span>
+                            <span>🟢 Active</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="job-btn primary" onclick="viewCandidates('senior-engineer')">View</button>
+                        <button class="job-btn secondary" onclick="editJob('senior-engineer')">Edit</button>
+                    </div>
+                </div>
+                
+                <div class="job-item">
+                    <div class="job-info">
+                        <h4>Product Manager</h4>
+                        <div class="job-meta">
+                            <span>📄 32 Applications</span>
+                            <span>🟢 Active</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="job-btn primary" onclick="viewCandidates('product-manager')">View</button>
+                        <button class="job-btn secondary" onclick="editJob('product-manager')">Edit</button>
+                    </div>
+                </div>
+                
+                <div class="job-item">
+                    <div class="job-info">
+                        <h4>UX Designer</h4>
+                        <div class="job-meta">
+                            <span>📄 28 Applications</span>
+                            <span>🟡 Review</span>
+                        </div>
+                    </div>
+                    <div class="job-actions">
+                        <button class="job-btn primary" onclick="viewCandidates('ux-designer')">View</button>
+                        <button class="job-btn secondary" onclick="editJob('ux-designer')">Edit</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Rankings Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3 class="section-title">Top AI-Ranked Candidates</h3>
+                    <a href="#" class="view-all-btn">View All</a>
+                </div>
+                
+                <div class="candidate-item">
+                    <div class="candidate-info">
+                        <div class="candidate-avatar">S</div>
+                        <div class="candidate-details">
+                            <h4>Sarah Johnson</h4>
+                            <div class="candidate-meta">5 years exp • 8.9 CGPA</div>
+                        </div>
+                    </div>
+                    <div class="candidate-score">94%</div>
+                    <div class="candidate-actions">
+                        <button class="candidate-btn btn-shortlist" onclick="shortlistCandidate('sarah')">✓</button>
+                        <button class="candidate-btn btn-hold" onclick="holdCandidate('sarah')">⏸</button>
+                        <button class="candidate-btn btn-reject" onclick="rejectCandidate('sarah')">✗</button>
+                    </div>
+                </div>
+                
+                <div class="candidate-item">
+                    <div class="candidate-info">
+                        <div class="candidate-avatar">M</div>
+                        <div class="candidate-details">
+                            <h4>Michael Chen</h4>
+                            <div class="candidate-meta">4 years exp • 8.7 CGPA</div>
+                        </div>
+                    </div>
+                    <div class="candidate-score">87%</div>
+                    <div class="candidate-actions">
+                        <button class="candidate-btn btn-shortlist" onclick="shortlistCandidate('michael')">✓</button>
+                        <button class="candidate-btn btn-hold" onclick="holdCandidate('michael')">⏸</button>
+                        <button class="candidate-btn btn-reject" onclick="rejectCandidate('michael')">✗</button>
+                    </div>
+                </div>
+                
+                <div class="candidate-item">
+                    <div class="candidate-info">
+                        <div class="candidate-avatar">E</div>
+                        <div class="candidate-details">
+                            <h4>Emily Rodriguez</h4>
+                            <div class="candidate-meta">3 years exp • 9.1 CGPA</div>
+                        </div>
+                    </div>
+                    <div class="candidate-score">82%</div>
+                    <div class="candidate-actions">
+                        <button class="candidate-btn btn-shortlist" onclick="shortlistCandidate('emily')">✓</button>
+                        <button class="candidate-btn btn-hold" onclick="holdCandidate('emily')">⏸</button>
+                        <button class="candidate-btn btn-reject" onclick="rejectCandidate('emily')">✗</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="content-section analytics-section">
+            <div class="section-header">
+                <h3 class="section-title">Analytics & Reports</h3>
+                <a href="#" class="view-all-btn">Export Data</a>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-placeholder">
+                        <div class="chart-title">Applications Over Time</div>
+                        <div class="bar-chart">
+                            <div class="bar bar-1"></div>
+                            <div class="bar bar-2"></div>
+                            <div class="bar bar-3"></div>
+                            <div class="bar bar-4"></div>
+                            <div class="bar bar-5"></div>
+                            <div class="bar bar-6"></div>
+                            <div class="bar bar-7"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-placeholder">
+                        <div class="chart-title">Skill Distribution</div>
+                        <div class="pie-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Notifications -->
+    <div class="notifications" id="notifications">
+        <div class="notification show">
+            <div class="notification-header">
+                <div class="notification-title">🎉 New Application</div>
+                <div class="notification-time">2 min ago</div>
+                <button class="close-notification" onclick="closeNotification(this)">×</button>
+            </div>
+            <div class="notification-content">
+                Alex Thompson applied for Senior Software Engineer position
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle user dropdown
+        function toggleDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Quick Actions
+        function createJobDescription() {
+            showNotification('🆕 Job Description Creator', 'Opening job description form...');
+            // Simulate loading
+            setTimeout(() => {
+                showNotification('✅ Success', 'Job description form is ready!');
+            }, 1500);
+        }
+
+        function viewRankings() {
+            showNotification('🧠 AI Rankings', 'Loading AI-powered candidate rankings...');
+            setTimeout(() => {
+                showNotification('📊 Rankings Ready', 'AI has analyzed all candidates!');
+            }, 2000);
+        }
+
+        function exportReports() {
+            showNotification('📊 Export Started', 'Generating comprehensive reports...');
+            setTimeout(() => {
+                showNotification('✅ Export Complete', 'Reports have been downloaded!');
+            }, 2500);
+        }
+
+        // Job Actions
+        function viewCandidates(jobId) {
+            showNotification('👥 Loading Candidates', `Fetching candidates for ${jobId}...`);
+        }
+
+        function editJob(jobId) {
+            showNotification('✏️ Edit Mode', `Opening editor for ${jobId}...`);
+        }
+
+        // Candidate Actions
+        function shortlistCandidate(candidateId) {
+            showNotification('✅ Shortlisted', `${candidateId} has been shortlisted!`);
+            updateCandidateStatus(candidateId, 'shortlisted');
+        }
+
+        function holdCandidate(candidateId) {
+            showNotification('⏸️ On Hold', `${candidateId} has been put on hold.`);
+            updateCandidateStatus(candidateId, 'hold');
+        }
+
+        function rejectCandidate(candidateId) {
+            showNotification('❌ Rejected', `${candidateId} has been rejected.`);
+            updateCandidateStatus(candidateId, 'rejected');
+        }
+
+        function updateCandidateStatus(candidateId, status) {
+            // Find and update the candidate item visually
+            const candidateItems = document.querySelectorAll('.candidate-item');
+            candidateItems.forEach(item => {
+                const name = item.querySelector('h4').textContent.toLowerCase();
+                if (name.includes(candidateId)) {
+                    item.style.opacity = '0.6';
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                    }, 1000);
+                }
+            });
+        }
+
+        // Logout function
+        function logout() {
+            showNotification('👋 Logging Out', 'See you soon!');
+            setTimeout(() => {
+                showNotification('✅ Logged Out', 'You have been successfully logged out.');
+            }, 1500);
+        }
+
+        // Notification System
+        function showNotification(title, content) {
+            const notificationsContainer = document.getElementById('notifications');
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <div class="notification-header">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-time">now</div>
+                    <button class="close-notification" onclick="closeNotification(this)">×</button>
+                </div>
+                <div class="notification-content">${content}</div>
+            `;
+            
+            notificationsContainer.appendChild(notification);
+            
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                closeNotification(notification.querySelector('.close-notification'));
+            }, 5000);
+        }
+
+        function closeNotification(button) {
+            const notification = button.closest('.notification');
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }
+
+        // Simulate real-time updates
+        function simulateRealTimeUpdates() {
+            const updates = [
+                { title: '📧 New Application', content: 'Jessica Park applied for UX Designer' },
+                { title: '🎯 AI Analysis Complete', content: 'Rankings updated for Product Manager role' },
+                { title: '📅 Interview Scheduled', content: 'Meeting set with top candidate tomorrow' },
+                { title: '📊 Weekly Report', content: 'Your recruitment metrics are ready' }
+            ];
+            
+            let index = 0;
+            setInterval(() => {
+                if (index < updates.length) {
+                    showNotification(updates[index].title, updates[index].content);
+                    index++;
+                }
+            }, 10000); // Show new notification every 10 seconds
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start real-time updates simulation
+            setTimeout(simulateRealTimeUpdates, 5000);
+            
+            // Add hover effects to metric cards
+            const metricCards = document.querySelectorAll('.metric-card');
+            metricCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // Add click animations to buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        });
+
+        // Chart interactions
+        document.querySelectorAll('.bar').forEach(bar => {
+            bar.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.boxShadow = '0 8px 25px rgba(79, 70, 229, 0.4)';
+            });
+            
+            bar.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9910c5ea513d087b',t:'MTc2MDg4MjEyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+  
+  <!-- Back to Dashboard -->
+  <a href="{{ url_for('dashboard') }}" 
+     class="flex items-center space-x-1 text-indigo-600 hover:text-indigo-800 font-medium mb-8 transition-all duration-200">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    <span>Back to Dashboard</span>
+  </a>
+
+  <!-- Profile Card -->
+  <div class="bg-white rounded-2xl shadow-xl p-10 w-full max-w-md text-center relative">
+    <form method="POST" enctype="multipart/form-data" class="space-y-4 mt-6">
+  <div class="flex justify-center mb-4 relative">
+    <div class="relative group">
+      <img id="profileImage"
+           src="{{ profile_image_url or url_for('static', filename='images/default-avatar.svg') }}"
+           alt="Profile Picture"
+           class="w-32 h-32 rounded-full border-4 border-indigo-100 shadow-sm object-cover transition-all duration-300">
+
+      <label for="fileInput"
+             class="absolute bottom-2 right-2 bg-indigo-600 text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-indigo-700 transition-all duration-200 opacity-0 group-hover:opacity-100">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 7h2l2-3h10l2 3h2a1 1 0 011 1v11a1 1 0 01-1 1H3a1 1 0 01-1-1V8a1 1 0 011-1zm9 3a4 4 0 100 8 4 4 0 000-8z" />
+        </svg>
+      </label>
+
+      <input type="file" id="fileInput" name="profile_image" class="hidden" accept="image/*">
+    </div>
+  </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 text-left">Full Name</label>
+        <input type="text" name="name" value="{{ hr.name }}" 
+               class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 text-left">Email</label>
+        <input type="email" name="email" value="{{ hr.email }}" readonly
+               class="w-full border border-gray-300 rounded-md p-2 bg-gray-100">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 text-left">Phone Number</label>
+        <input type="text" name="phone" value="{{ hr.phone }}" 
+               class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 text-left">Job Title</label>
+        <input type="text" name="job_title" value="{{ hr.job_title }}" 
+               class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 text-left">Company Name</label>
+        <input type="text" name="company_name" value="{{ hr.company_name }}" 
+               class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 text-left">Company Website</label>
+        <input type="text" name="company_website" value="{{ hr.company_website }}" 
+               class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <div class="text-center pt-4">
+        <button type="submit" 
+                class="bg-indigo-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-indigo-700 transition-all duration-200">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- JavaScript for live preview -->
+<script>
+  const fileInput = document.getElementById("fileInput");
+  const profileImage = document.getElementById("profileImage");
+  const removeButton = document.getElementById("removeButton");
+  const removeFlag = document.getElementById("remove_image_flag");
+  const defaultAvatar = "{{ url_for('static', filename='images/default-avatar.svg') }}";
+
+  // Show preview + fade in remove button
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        profileImage.src = event.target.result;
+        removeButton.classList.remove("hidden");
+        removeFlag.value = "0"; // ✅ ensure not removing
+        setTimeout(() => {
+          removeButton.classList.add("opacity-100", "scale-100");
+          removeButton.classList.remove("opacity-0", "scale-95");
+        }, 10);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Reset to default + hide remove button smoothly
+  removeButton.addEventListener("click", () => {
+    profileImage.src = defaultAvatar;
+    fileInput.value = "";
+    removeFlag.value = "1"; // ✅ mark as removed
+    removeButton.classList.remove("opacity-100", "scale-100");
+    removeButton.classList.add("opacity-0", "scale-95");
+    setTimeout(() => removeButton.classList.add("hidden"), 200);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Sign Up - ResumeRank AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 30%, #ddd6fe 70%, #c7d2fe 100%);
+            min-height: 100%;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Background pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="12.5" cy="12.5" r="1" fill="rgba(79,70,229,0.08)"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            z-index: 0;
+        }
+        
+        /* Floating background elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .floating-shape {
+            position: absolute;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        .shape-1 {
+            width: 100px;
+            height: 100px;
+            top: 15%;
+            left: 8%;
+            animation-delay: 0s;
+        }
+        
+        .shape-2 {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+        
+        .shape-3 {
+            width: 80px;
+            height: 80px;
+            bottom: 25%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+            50% { transform: translateY(-30px) scale(1.1); opacity: 1; }
+        }
+        
+        /* Logo */
+        .logo {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #4F46E5;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo::before {
+            content: '🎯';
+            font-size: 28px;
+        }
+        
+        /* Main container */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 500px;
+            min-height: 100%;
+            position: relative;
+            z-index: 1;
+            gap: 60px;
+            align-items: center;
+            padding: 100px 60px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Left section - Illustration */
+        .illustration-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        
+        .illustration {
+            position: relative;
+            margin-bottom: 40px;
+        }
+        
+        .hr-workflow {
+            width: 400px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            backdrop-filter: blur(10px);
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .workflow-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .ai-badge {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-step:hover {
+            background: #f1f5f9;
+            transform: translateX(5px);
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .step-1 .step-icon {
+            background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+            color: #7c3aed;
+        }
+        
+        .step-2 .step-icon {
+            background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+            color: #3b82f6;
+        }
+        
+        .step-3 .step-icon {
+            background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+            color: #10b981;
+        }
+        
+        .step-text {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .floating-resumes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .floating-resume {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background: rgba(79, 70, 229, 0.2);
+            border-radius: 4px;
+            animation: floatResume 10s ease-in-out infinite;
+        }
+        
+        .resume-1 { top: 10%; left: -10%; animation-delay: 0s; }
+        .resume-2 { top: 50%; right: -15%; animation-delay: 3s; }
+        .resume-3 { bottom: 20%; left: -5%; animation-delay: 6s; }
+        
+        @keyframes floatResume {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
+            50% { transform: translateY(-25px) rotate(10deg); opacity: 0.8; }
+        }
+        
+        .illustration-section h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #1e293b 0%, #4F46E5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .illustration-section p {
+            font-size: 18px;
+            color: #64748b;
+            line-height: 1.6;
+            max-width: 450px;
+        }
+        
+        /* Right section - Sign up form */
+        .signup-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.8s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hr-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(79, 70, 229, 0.1);
+            color: #4F46E5;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+        
+        .form-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .form-subtitle {
+            color: #64748b;
+            margin-bottom: 32px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        .required {
+            color: #ef4444;
+        }
+        
+        .optional {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4F46E5;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        
+        .form-group input.valid {
+            border-color: #10b981;
+        }
+        
+        .form-group input.invalid {
+            border-color: #ef4444;
+        }
+        
+        .password-strength {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin: 4px 0;
+            overflow: hidden;
+        }
+        
+        .strength-fill {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-weak .strength-fill {
+            width: 33%;
+            background: #ef4444;
+        }
+        
+        .strength-medium .strength-fill {
+            width: 66%;
+            background: #f59e0b;
+        }
+        
+        .strength-strong .strength-fill {
+            width: 100%;
+            background: #10b981;
+        }
+        
+        .password-match {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #10b981;
+            display: none;
+        }
+        
+        .password-match.show {
+            display: block;
+        }
+        
+        .password-match.error {
+            color: #ef4444;
+        }
+        
+        .file-upload {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 24px;
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .file-upload:hover {
+            border-color: #4F46E5;
+            background: #f8fafc;
+        }
+        
+        .file-upload.dragover {
+            border-color: #4F46E5;
+            background: #f0f4ff;
+        }
+        
+        .file-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .file-icon {
+            font-size: 32px;
+            color: #4F46E5;
+        }
+        
+        .file-text {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .file-subtext {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .file-selected {
+            color: #10b981;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .signup-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .signup-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .signup-btn:hover::before {
+            left: 100%;
+        }
+        
+        .signup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+        }
+        
+        .signup-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .signup-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        
+        .signup-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .footer-text a {
+            color: #4F46E5;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-text a:hover {
+            color: #3730a3;
+        }
+        
+        /* Success message */
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            font-weight: 500;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .success-message.show {
+            transform: translateX(0);
+        }
+        
+        .success-message.error {
+            background: #ef4444;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 80px 40px 40px;
+            }
+            
+            .illustration-section {
+                order: 2;
+            }
+            
+            .signup-section {
+                order: 1;
+            }
+            
+            .hr-workflow {
+                width: 350px;
+                height: 250px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 60px 20px 20px;
+            }
+            
+            .logo {
+                position: relative;
+                top: 0;
+                left: 0;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+            
+            .signup-section {
+                padding: 30px 20px;
+            }
+            
+            .form-title {
+                font-size: 28px;
+            }
+            
+            .illustration-section h1 {
+                font-size: 32px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .hr-workflow {
+                width: 300px;
+                height: 220px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+    </div>
+    
+    <div class="logo">ResumeRank AI</div>
+    
+    <main class="main-container">
+        <section class="illustration-section">
+            <div class="illustration">
+                <div class="floating-resumes">
+                    <div class="floating-resume resume-1"></div>
+                    <div class="floating-resume resume-2"></div>
+                    <div class="floating-resume resume-3"></div>
+                </div>
+                
+                <div class="hr-workflow">
+                    <div class="workflow-header">
+                        <div class="workflow-title">HR Workflow</div>
+                        <div class="ai-badge">AI Powered</div>
+                    </div>
+                    <div class="workflow-steps">
+                        <div class="workflow-step step-1">
+                            <div class="step-icon">1</div>
+                            <div class="step-text">
+                                <div class="step-title">Create Job Description</div>
+                                <div class="step-desc">Define requirements & criteria</div>
+                            </div>
+                        </div>
+                        <div class="workflow-step step-2">
+                            <div class="step-icon">2</div>
+                            <div class="step-text">
+                                <div class="step-title">Collect Applications</div>
+                                <div class="step-desc">Candidates submit resumes</div>
+                            </div>
+                        </div>
+                        <div class="workflow-step step-3">
+                            <div class="step-icon">3</div>
+                            <div class="step-text">
+                                <div class="step-title">AI Ranks Candidates</div>
+                                <div class="step-desc">Get shortlisted top matches</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h1>Create Your HR Account</h1>
+            <p>Upload your job descriptions, manage applications, and let AI shortlist the best candidates effortlessly.</p>
+        </section>
+        
+        <section class="signup-section">
+            <div class="hr-badge">
+                🛡️ HR Professionals Only
+            </div>
+            
+            <form id="signupForm" action="/hr_signup" method="POST" enctype="multipart/form-data">
+                <h2 class="form-title">Join Our Platform</h2>
+                <p class="form-subtitle">Create your professional HR account and start leveraging AI for smarter recruitment.</p>
+                
+                <div class="form-group">
+                    <label for="fullName">Full Name <span class="required">*</span></label>
+                    <input type="text" id="fullName" name="name" required placeholder="John Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Company Email <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="hr@company.com" onblur="validateEmail(this)">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password <span class="required">*</span></label>
+                        <input type="password" id="password" name="password" required placeholder="Create password" oninput="checkPasswordStrength(this)">
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-bar">
+                                <div class="strength-fill"></div>
+                            </div>
+                            <span class="strength-text">Password strength</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm password" oninput="checkPasswordMatch()">
+                        <div class="password-match" id="passwordMatch">✓ Passwords match</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="companyName">Company Name <span class="required">*</span></label>
+                        <input type="text" id="companyName" name="companyName" required placeholder="Acme Corporation">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobTitle">Job Title / Role <span class="required">*</span></label>
+                        <input type="text" id="jobTitle" name="jobTitle" required placeholder="HR Manager">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="companyWebsite">Company Website <span class="optional">(optional)</span></label>
+                    <input type="url" id="companyWebsite" name="companyWebsite" placeholder="https://company.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>HR/Company Verification <span class="required">*</span></label>
+                    <label class="file-upload" for="verification" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                        <input type="file" id="verification" name="verification" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" required onchange="handleFileUpload(this)">
+                        <div class="file-upload-content">
+                            <div class="file-icon">📄</div>
+                            <div class="file-text" id="fileText">Upload HR ID or Company Verification Document</div>
+                            <div class="file-subtext">PDF, JPG, PNG, DOC up to 10MB</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <button type="submit" class="signup-btn" id="signupBtn">
+                    <span id="signupBtnText">Create Account</span>
+                </button>
+                
+                <div class="footer-text">
+                    Already registered? <a href="#" onclick="showContactAdmin()">Contact admin to login</a>
+                </div>
+            </form>
+        </section>
+    </main>
+    
+    <script>
+        function validateEmail(input) {
+            const email = input.value;
+            const companyDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'];
+            const domain = email.split('@')[1];
+            
+            if (companyDomains.includes(domain)) {
+                showSuccessMessage('Please use your company email address for verification.', 'error');
+                input.classList.add('invalid');
+            } else {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+            }
+        }
+        
+        function checkPasswordStrength(input) {
+            const password = input.value;
+            const strengthIndicator = document.getElementById('passwordStrength');
+            const strengthBar = strengthIndicator.querySelector('.strength-fill');
+            const strengthText = strengthIndicator.querySelector('.strength-text');
+            
+            let strength = 0;
+            let feedback = '';
+            
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            strengthIndicator.className = 'password-strength';
+            
+            if (strength <= 2) {
+                strengthIndicator.classList.add('strength-weak');
+                feedback = 'Weak password';
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+            } else if (strength <= 3) {
+                strengthIndicator.classList.add('strength-medium');
+                feedback = 'Medium strength';
+                input.classList.remove('invalid');
+                input.classList.remove('valid');
+            } else {
+                strengthIndicator.classList.add('strength-strong');
+                feedback = 'Strong password';
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+            }
+            
+            strengthText.textContent = feedback;
+            checkPasswordMatch();
+        }
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const matchIndicator = document.getElementById('passwordMatch');
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (confirmPassword.length > 0) {
+                if (password === confirmPassword) {
+                    matchIndicator.textContent = '✓ Passwords match';
+                    matchIndicator.classList.remove('error');
+                    matchIndicator.classList.add('show');
+                    confirmInput.classList.remove('invalid');
+                    confirmInput.classList.add('valid');
+                } else {
+                    matchIndicator.textContent = '✗ Passwords do not match';
+                    matchIndicator.classList.add('error');
+                    matchIndicator.classList.add('show');
+                    confirmInput.classList.add('invalid');
+                    confirmInput.classList.remove('valid');
+                }
+            } else {
+                matchIndicator.classList.remove('show');
+                confirmInput.classList.remove('invalid', 'valid');
+            }
+        }
+        
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+        
+        function handleDragLeave(event) {
+            event.currentTarget.classList.remove('dragover');
+        }
+        
+        function handleDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const fileInput = document.getElementById('verification');
+                fileInput.files = files;
+                handleFileUpload(fileInput);
+            }
+        }
+        
+        function handleFileUpload(input) {
+            const fileText = document.getElementById('fileText');
+            const fileIcon = document.querySelector('.file-icon');
+            
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const fileName = file.name;
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                
+                if (file.size > 10 * 1024 * 1024) {
+                    showSuccessMessage('File size must be less than 10MB', 'error');
+                    input.value = '';
+                    return;
+                }
+                
+                fileIcon.textContent = '✓';
+                fileText.innerHTML = `<span class="file-selected">📎 ${fileName} (${fileSize}MB)</span>`;
+            } else {
+                fileIcon.textContent = '📄';
+                fileText.textContent = 'Upload HR ID or Company Verification Document';
+            }
+        }
+        
+        function handleSignup(event) {
+            event.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const signupBtn = document.getElementById('signupBtn');
+            const btnText = document.getElementById('signupBtnText');
+            
+            if (password !== confirmPassword) {
+                showSuccessMessage('Passwords do not match!', 'error');
+                return;
+            }
+            
+            const fileInput = document.getElementById('verification');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showSuccessMessage('Please upload your verification document.', 'error');
+                return;
+            }
+            
+            // Add loading state
+            signupBtn.classList.add('loading');
+            btnText.textContent = '';
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Remove loading state
+                signupBtn.classList.remove('loading');
+                btnText.textContent = 'Create Account';
+                
+                // Show success message
+                showSuccessMessage('Account created successfully! Please check your email for verification instructions.');
+                
+                // Reset form
+                event.target.reset();
+                document.getElementById('fileText').textContent = 'Upload HR ID or Company Verification Document';
+                document.querySelector('.file-icon').textContent = '📄';
+                document.getElementById('passwordStrength').className = 'password-strength';
+                document.getElementById('passwordMatch').classList.remove('show');
+                
+                // Remove validation classes
+                document.querySelectorAll('input').forEach(input => {
+                    input.classList.remove('valid', 'invalid');
+                });
+                
+            }, 3000);
+        }
+        
+        function showContactAdmin() {
+            showSuccessMessage('Please contact your system administrator for login assistance.');
+        }
+        
+        function showSuccessMessage(message, type = 'success') {
+            // Remove existing message if any
+            const existingMessage = document.querySelector('.success-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+            
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            if (type === 'error') {
+                successDiv.classList.add('error');
+            }
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            // Trigger animation
+            setTimeout(() => {
+                successDiv.classList.add('show');
+            }, 100);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+                setTimeout(() => {
+                    if (successDiv.parentNode) {
+                        successDiv.parentNode.removeChild(successDiv);
+                    }
+                }, 300);
+            }, 5000);
+        }
+        
+        // Add real-time form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const inputs = form.querySelectorAll('input[required]');
+            const submitBtn = document.getElementById('signupBtn');
+            
+            function checkFormValidity() {
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                    }
+                });
+                
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                if (password !== confirmPassword) {
+                    isValid = false;
+                }
+                
+                submitBtn.disabled = !isValid;
+            }
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', checkFormValidity);
+                input.addEventListener('blur', checkFormValidity);
+            });
+            
+            checkFormValidity();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9910a891b211087b',t:'MTc2MDg4MDkyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
